@@ -6,12 +6,10 @@ function App() {
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const fileSelectedHandler = (event) => {
-    event.preventDefault();
     setFile(event.target.files[0]);
   };
 
-  const fileUploadHandler = async (e) => {
-    e.preventDefault();
+  const fileUploadHandler = async () => {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -24,8 +22,6 @@ function App() {
 
       const { fileName, filePath } = res.data;
       setUploadedFile({ fileName, filePath });
-      console.log(fileName);
-      console.log(filePath);
     } catch (err) {
       if (err.response.status === 500) {
         console.log('There was a problem with the server');
@@ -37,15 +33,25 @@ function App() {
 
   return (
     <div className="App">
-      {/* <form onSubmit={fileUploadHandler}> */}
-      <h3>File upload</h3>
-      <input type="file" onChange={fileSelectedHandler} />
-      <button onClick={(e) => fileUploadHandler(e)}>Upload</button>
-      {/* </form> */}
+      <h1 className="App-header">File upload</h1>
+      <section>
+        <input
+          className="App-input"
+          type="file"
+          onChange={fileSelectedHandler}
+        />
+        <button className="App-button" onClick={fileUploadHandler}>
+          Upload
+        </button>
+      </section>
       {uploadedFile && (
-        <div>
-          <h3>{uploadedFile.fileName}</h3>
-          <img src={uploadedFile.filePath} alt="logo" />
+        <div className="upload">
+          <h3 className="upload_header">{uploadedFile.fileName}</h3>
+          <img
+            className="upload_image"
+            src={uploadedFile.filePath}
+            alt="logo"
+          />
         </div>
       )}
     </div>
