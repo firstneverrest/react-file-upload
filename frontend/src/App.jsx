@@ -1,36 +1,53 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 function App() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [file, setFile] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const fileSelectedHandler = (event) => {
-    setSelectedFile(event.target.files[0]);
+    event.preventDefault();
+    setFile(event.target.files[0]);
   };
 
-  const fileUploadHandler = () => {
-    const data = new FormData();
-    console.log(selectedFile);
+  const fileUploadHandler = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('file', file);
 
-    data.append('file', selectedFile, selectedFile.name);
-    console.log(data);
+    try {
+      const res = await axios.post('http://localhost:5000/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-    // fetch('http://localhost:8080/upload', {
-    //   method: 'POST',
-    //   body: data
-    // })
-    // .then(response => {
-    //   console.log(response);
-    // })
-    // .catch(error => {
-    //   console.log(error);
-    // });
+      const { fileName, filePath } = res.data;
+      setUploadedFile({ fileName, filePath });
+      console.log(fileName);
+      console.log(filePath);
+    } catch (err) {
+      if (err.response.status === 500) {
+        console.log('There was a problem with the server');
+      } else {
+        console.log(err.response.data.msg);
+      }
+    }
   };
 
   return (
     <div className="App">
+      {/* <form onSubmit={fileUploadHandler}> */}
       <h3>File upload</h3>
       <input type="file" onChange={fileSelectedHandler} />
-      <button onClick={fileUploadHandler}>Upload</button>
+      <button onClick={(e) => fileUploadHandler(e)}>Upload</button>
+      {/* </form> */}
+      {uploadedFile && (
+        <div>
+          <h3>{uploadedFile.fileName}</h3>
+          <img src={uploadedFile.filePath} alt="logo" />
+        </div>
+      )}
     </div>
   );
 }
