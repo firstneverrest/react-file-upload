@@ -14,17 +14,20 @@ app.post('/upload', function (req, res) {
   }
   const file = req.files.file;
 
-  file.mv(`${__dirname}/public/uploads/${file.name}`, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send(err);
-    }
+  file.mv(
+    `${path.join(__dirname, '../')}frontend/public/uploads/${file.name}`,
+    (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+      }
 
-    res.status(200).json({
-      fileName: file.name,
-      filePath: `/uploads/${file.name}`,
-    });
-  });
+      res.status(200).json({
+        fileName: file.name,
+        filePath: `/uploads/${file.name}`,
+      });
+    }
+  );
 });
 
 app.listen(5000, () => console.log('Server started on port 5000'));
